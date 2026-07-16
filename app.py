@@ -243,7 +243,8 @@ conn = db_manager.obter_conexao()
 # --- INTERFACE: SIDEBAR (SCHEMA COM LOGO) ---
 with st.sidebar:
     # Adicionando a logo do Ministério da Educação enviada
-    st.image("image_e7d479.JPG", use_container_width=True)
+    #IMAGE_PATH = os.path.join(os.path.dirname(__file__), "image_e7d479.jpg")
+    st.image("image_e7d479.jpg", use_container_width=True)
     st.markdown("---")
     
     st.header("📋 Estrutura do Banco")
@@ -282,7 +283,7 @@ with st.sidebar:
 # Layout de duas colunas para o topo (Logo à esquerda, texto à direita)
 col_logo, col_titulo = st.columns([1, 4])
 with col_logo:
-    st.image("image_e7d479.JPG", width=150)
+    st.image("image_e7d479.jpg", width=150)
 with col_titulo:
     st.title("SQL Playground Interativo")
     st.write("**Plataforma de Capacitação de Banco de Dados**")
