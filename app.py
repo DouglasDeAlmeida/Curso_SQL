@@ -9,8 +9,11 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# Inicializa o estado da tela ativa se não existir
+if "tela_ativa" not in st.session_state:
+    st.session_state["tela_ativa"] = "Playground"
+
 # --- ESTILIZAÇÃO E PALETA DE CORES (CSS) ---
-# Cores do MEC/Bandeira: Verde (#009B3A), Amarelo (#FFDF00), Azul (#002780), Cinza Escuro (#333333)
 st.markdown("""
     <style>
         /* Cor de fundo principal e textos */
@@ -46,6 +49,24 @@ st.markdown("""
             border-color: #FFDF00;
         }
         
+        /* Links customizados em formato de card para a tela Sobre */
+        .card-link {
+            background-color: #f0f4f1;
+            border-left: 5px solid #009B3A;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        .card-link a {
+            color: #002780 !important;
+            font-weight: bold;
+            text-decoration: none;
+            font-size: 1.1rem;
+        }
+        .card-link a:hover {
+            text-decoration: underline;
+        }
+        
         /* Divisores decorativos verde/amarelo */
         .header-line {
             height: 4px;
@@ -71,7 +92,6 @@ class DatabaseManager:
         self.conn.commit()
 
     def _criar_tabelas(self):
-        # Tabela Clientes
         self.cursor.execute("""
         CREATE TABLE clientes (
             id_cliente INTEGER PRIMARY KEY,
@@ -83,7 +103,6 @@ class DatabaseManager:
         );
         """)
 
-        # Tabela Livros
         self.cursor.execute("""
         CREATE TABLE livros (
             id_livro INTEGER PRIMARY KEY,
@@ -95,7 +114,6 @@ class DatabaseManager:
         );
         """)
 
-        # Tabela Pedidos
         self.cursor.execute("""
         CREATE TABLE pedidos (
             id_pedido INTEGER PRIMARY KEY,
@@ -240,69 +258,121 @@ db_manager = get_db()
 conn = db_manager.obter_conexao()
 
 
-# --- INTERFACE: SIDEBAR (SCHEMA COM LOGO) ---
+# --- INTERFACE: SIDEBAR COM CONTROLE DE NAVEGAÇÃO ---
 with st.sidebar:
-    # Adicionando a logo do Ministério da Educação enviada
-    #IMAGE_PATH = os.path.join(os.path.dirname(__file__), "image_e7d479.jpg")
     st.image("image_e7d479.jpg", use_container_width=True)
     st.markdown("---")
     
-    st.header("📋 Estrutura do Banco")
+    # Botões de Navegação das Telas
+    st.subheader("Navegação")
+    if st.button("📝 Playground de Exercícios", use_container_width=True, key="nav_play"):
+        st.session_state["tela_ativa"] = "Playground"
+    if st.button("ℹ️ Sobre o Curso / Recursos", use_container_width=True, key="nav_about"):
+        st.session_state["tela_ativa"] = "Sobre"
+        
+    st.markdown("---")
     
-    st.subheader("🔑 Tabela: `clientes`")
-    st.markdown("""
-    - **id_cliente** *(INT - PK)*
-    - **nome** *(TEXT)*
-    - **email** *(TEXT)*
-    - **cidade** *(TEXT)*
-    - **estado** *(CHAR(2))*
-    - **data_cadastro** *(DATE)*
-    """)
+    # Exibir Schema apenas na tela do Playground para não sobrecarregar a de "Sobre"
+    if st.session_state["tela_ativa"] == "Playground":
+        st.header("📋 Estrutura do Banco")
+        
+        st.subheader("🔑 Tabela: `clientes`")
+        st.markdown("""
+        - **id_cliente** *(INT - PK)*
+        - **nome** *(TEXT)*
+        - **email** *(TEXT)*
+        - **cidade** *(TEXT)*
+        - **estado** *(CHAR(2))*
+        - **data_cadastro** *(DATE)*
+        """)
+        
+        st.subheader("📦 Tabela: `livros`")
+        st.markdown("""
+        - **id_livro** *(INT - PK)*
+        - **titulo** *(TEXT)*
+        - **autor** *(TEXT)*
+        - **categoria** *(TEXT)*
+        - **preco** *(REAL)*
+        - **estoque** *(INT)*
+        """)
+
+        st.subheader("🛒 Tabela: `pedidos`")
+        st.markdown("""
+        - **id_pedido** *(INT - PK)*
+        - **id_cliente** *(INT - FK)*
+        - **id_livro** *(INT - FK)*
+        - **data_pedido** *(DATE)*
+        - **valor** *(REAL)*
+        """)
+
+
+# --- CONTROLE DE EXIBIÇÃO DE TELAS ---
+
+if st.session_state["tela_ativa"] == "Playground":
+    # --- TELA 1: PLAYGROUND ---
+    col_logo, col_titulo = st.columns([1, 4])
+    with col_logo:
+        st.image("image_e7d479.jpg", width=150)
+    with col_titulo:
+        st.title("SQL Playground Interativo")
+        st.write("**Plataforma de Capacitação de Banco de Dados**")
+
+    st.markdown('<div class="header-line"></div>', unsafe_allow_html=True)
+    st.markdown("Pratique suas habilidades em SQL escrevendo as consultas. O sistema valida de forma automatizada se o seu resultado está correto!")
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # Renderização das Questões
+    questoes = [
+        (1, "Selecione o id_livro, o titulo e preco da tabela livros:"),
+        (2, "Selecione apenas os livros que estão em estoque (estoque > 0) e ordene pelo preço de forma decrescente:"),
+        (3, "Descubra quantos livros são da categoria 'Ficção' (use COUNT):"),
+        (4, "Selecione todos os dados do livro mais caro do banco (Dica: use ORDER BY e LIMIT):")
+    ]
+
+    for id_q, desc in questoes:
+        widget = QuestionWidget(id_questao=id_q, titulo=desc, conn=conn)
+        widget.render()
+        st.markdown("<br><br>", unsafe_allow_html=True)
+
+elif st.session_state["tela_ativa"] == "Sobre":
+    # --- TELA 2: SOBRE ---
+    col_logo, col_titulo = st.columns([1, 4])
+    with col_logo:
+        st.image("image_e7d479.jpg", width=150)
+    with col_titulo:
+        st.title("Recursos e Material de Apoio")
+        st.write("**Curso de Banco de Dados - Ministério da Educação**")
+        
+    st.markdown('<div class="header-line"></div>', unsafe_allow_html=True)
     
-    st.subheader("📦 Tabela: `livros`")
+    st.markdown("### 📚 Materiais Disponíveis")
+    st.write("Aproveite os materiais de referência abaixo para aprofundar seu conhecimento em SQL e modelagem de dados:")
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # Cards estilizados com os links pedidos
     st.markdown("""
-    - **id_livro** *(INT - PK)*
-    - **titulo** *(TEXT)*
-    - **autor** *(TEXT)*
-    - **categoria** *(TEXT)*
-    - **preco** *(REAL)*
-    - **estoque** *(INT)*
-    """)
-
-    st.subheader("🛒 Tabela: `pedidos`")
-    st.markdown("""
-    - **id_pedido** *(INT - PK)*
-    - **id_cliente** *(INT - FK)*
-    - **id_livro** *(INT - FK)*
-    - **data_pedido** *(DATE)*
-    - **valor** *(REAL)*
-    """)
-
-
-# --- INTERFACE: ÁREA PRINCIPAL ---
-# Layout de duas colunas para o topo (Logo à esquerda, texto à direita)
-col_logo, col_titulo = st.columns([1, 4])
-with col_logo:
-    st.image("image_e7d479.jpg", width=150)
-with col_titulo:
-    st.title("SQL Playground Interativo")
-    st.write("**Plataforma de Capacitação de Banco de Dados**")
-
-# Linha de paleta decorativa
-st.markdown('<div class="header-line"></div>', unsafe_allow_html=True)
-
-st.markdown("Pratique suas habilidades em SQL escrevendo as consultas. O sistema valida de forma automatizada se o seu resultado está correto!")
-st.markdown("<br>", unsafe_allow_html=True)
-
-# Renderização das Questões
-questoes = [
-    (1, "Selecione o id_livro, o titulo e preco da tabela livros:"),
-    (2, "Selecione apenas os livros que estão em estoque (estoque > 0) e ordene pelo preço de forma decrescente:"),
-    (3, "Descubra quantos livros são da categoria 'Ficção' (use COUNT):"),
-    (4, "Selecione todos os dados do livro mais caro do banco (Dica: use ORDER BY e LIMIT):")
-]
-
-for id_q, desc in questoes:
-    widget = QuestionWidget(id_questao=id_q, titulo=desc, conn=conn)
-    widget.render()
-    st.markdown("<br><br>", unsafe_allow_html=True)
+        <div class="card-link">
+            <h4>📖 Slides Oficiais da Aula</h4>
+            <p>Acesse a apresentação completa utilizada em nosso treinamento.</p>
+            <a href="https://canva.link/hc36lmwpidnh0mp" target="_blank">🔗 Clique aqui para abrir os Slides no Canva</a>
+        </div>
+        
+        <div class="card-link">
+            <h4>💻 Praticar Mais Questões (SQL Practice)</h4>
+            <p>Quer continuar treinando? Este site interativo possui dezenas de problemas adicionais práticos com feedback instantâneo.</p>
+            <a href="https://www.sql-practice.com" target="_blank">🔗 Ir para o sql-practice.com</a>
+        </div>
+        
+        <div class="card-link">
+            <h4>📖 Guia Completo e Prático de SQL</h4>
+            <p>Um tutorial detalhado que serve como excelente manual de consulta para sintaxe, JOINS, funções de agregação e muito mais.</p>
+            <a href="https://www.sqltutorial.org" target="_blank">🔗 Acessar o sqltutorial.org</a>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("<br><hr>", unsafe_allow_html=True)
+    
+    # Botão para voltar ao playground de forma simples
+    if st.button("← Voltar para os Exercícios", type="primary"):
+        st.session_state["tela_ativa"] = "Playground"
+        st.rerun()
