@@ -1,4 +1,4 @@
-import streamlit as st  
+import streamlit as st
 import sqlite3
 import pandas as pd
 
@@ -157,10 +157,8 @@ class SQLTester:
         2: "SELECT * FROM livros WHERE estoque > 0 ORDER BY preco DESC;",
         3: "SELECT COUNT(*) FROM livros WHERE categoria = 'Ficção';",
         4: "SELECT * FROM livros ORDER BY preco DESC LIMIT 1;",
-        # Novas Questões da lista do usuário:
         6: "SELECT * FROM livros;",
         7: "SELECT nome FROM clientes;",
-        8: "SELECT * FROM pedidos;",
         9: "SELECT * FROM livros WHERE preco > 50.00;",
         10: "SELECT * FROM clientes WHERE cidade <> 'São Paulo';",
         11: "SELECT * FROM pedidos WHERE data_pedido > '2026-02-01';",
@@ -180,10 +178,8 @@ class SQLTester:
         2: "Dica: Use `WHERE estoque > 0` e ordene com `ORDER BY preco DESC`.",
         3: "Dica: Use a função de agregação `COUNT(*)` filtrando por `categoria = 'Ficção'`.",
         4: "Dica: Você pode ordenar pelo preço de forma decrescente e limitar o resultado a 1 (`LIMIT 1`).",
-        5: "Dica: Certifique-se de que a tabela se chama `autores`, possui as colunas `id_autor` (INTEGER PRIMARY KEY), `nome` (TEXT), `nacionalidade` (TEXT) e que inseriu exatamente os dois autores sugeridos.",
         6: "Dica: Utilize o caractere curinga asterisco `*` para trazer todas as colunas da tabela `livros`.",
         7: "Dica: Selecione apenas a coluna `nome` da tabela `clientes`.",
-        8: "Dica: Lembre-se que no nosso banco de dados, compras são representadas pela tabela `pedidos`. Use `SELECT *` nela.",
         9: "Dica: Use a cláusula `WHERE preco > 50.00` na tabela `livros`.",
         10: "Dica: Filtre usando `WHERE cidade <> 'São Paulo'` ou `WHERE cidade != 'São Paulo'`.",
         11: "Dica: Lembre-se que as datas no SQLite são comparadas como strings no formato 'AAAA-MM-DD'. Use `WHERE data_pedido > '2026-01-01'`.",
@@ -200,9 +196,6 @@ class SQLTester:
 
     @classmethod
     def verificar_resposta(cls, id_questao: int, df_usuario: pd.DataFrame, conn: sqlite3.Connection) -> tuple[bool, str]:
-        if id_questao == 5:
-            return cls._verificar_questao_5(conn)
-
         if id_questao not in cls.GABARITOS:
             return False, "Questão não cadastrada no sistema de testes."
 
@@ -227,33 +220,6 @@ class SQLTester:
         except Exception as e:
             return False, f"Erro interno ao validar a resposta: {str(e)}"
 
-    @classmethod
-    def _verificar_questao_5(cls, conn: sqlite3.Connection) -> tuple[bool, str]:
-        try:
-            cursor = conn.cursor()
-            cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='autores';")
-            if not cursor.fetchone():
-                return False, "A tabela `autores` ainda não foi criada. " + cls.DICAS[5]
-
-            df_autores = pd.read_sql_query("SELECT * FROM autores;", conn)
-            df_autores.columns = [col.lower() for col in df_autores.columns]
-            colunas_esperadas = ["id_autor", "nome", "nacionalidade"]
-            
-            if list(df_autores.columns) != colunas_esperadas:
-                return False, f"As colunas encontradas foram {list(df_autores.columns)}, mas o esperado era {colunas_esperadas}."
-
-            if len(df_autores) < 2:
-                return False, "A tabela foi criada, mas você precisa inserir os 2 registros de autores solicitados!"
-            
-            primeiro_autor = df_autores.iloc[0].to_dict()
-            if "machado de assis" not in str(primeiro_autor['nome']).lower():
-                return False, "Os dados do primeiro autor não parecem corretos (ID: 1, Machado de Assis, Brasileiro)."
-
-            return True, "Excelente! Você criou a tabela 'autores' com sucesso e populou os dados corretamente!"
-
-        except Exception as e:
-            return False, f"Erro ao verificar a tabela: {str(e)}"
-
 
 class QuestionWidget:
     """Componente de interface para renderizar as caixas de perguntas e validação."""
@@ -267,19 +233,7 @@ class QuestionWidget:
     def render(self):
         st.subheader(f"Questão {self.id_questao} - {self.titulo}")
         
-        # Template inicial didático para a questão 5
         default_val = ""
-        if self.id_questao == 5:
-            default_val = """-- Digite seu código de CREATE e INSERT aqui:
-CREATE TABLE autores (
-    id_autor INTEGER PRIMARY KEY,
-    nome TEXT,
-    nacionalidade TEXT
-);
-
-INSERT INTO autores VALUES (1, 'Machado de Assis', 'Brasileiro');
-INSERT INTO autores VALUES (2, 'Clarice Lispector', 'Brasileira');
-"""
 
         query_usuario = st.text_area(
             "Digite o código SQL e pressione Ctrl+Enter (ou clique em Executar)", 
@@ -319,10 +273,6 @@ INSERT INTO autores VALUES (2, 'Clarice Lispector', 'Brasileira');
                 if sucesso:
                     st.balloons()
                     st.success(f"🎉 **{mensagem}**")
-                    if self.id_questao == 5:
-                        st.subheader("📊 Tabela `autores` criada com sucesso:")
-                        df_autores = pd.read_sql_query("SELECT * FROM autores;", self.conn)
-                        st.dataframe(df_autores, use_container_width=True)
                 else:
                     st.error(f"❌ **Resposta Incorreta**\n\n{mensagem}")
                     
@@ -446,12 +396,10 @@ if st.session_state["tela_ativa"] == "Playground":
         (2, "Selecione apenas os livros que estão em estoque (estoque > 0) e ordene pelo preço de forma decrescente:", False),
         (3, "Descubra quantos livros são da categoria 'Ficção' (use COUNT):", False),
         (4, "Selecione todos os dados do livro mais caro do banco (Dica: use ORDER BY e LIMIT):", False),
-        (5, "Crie uma tabela chamada 'autores' com as colunas 'id_autor' (Inteiro, chave primária), 'nome' (Texto) e 'nacionalidade' (Texto). Em seguida, insira os autores 'Machado de Assis' (ID 1, Brasileiro) e 'Clarice Lispector' (ID 2, Brasileira):", True),
         
         # Grupo 1: Consultas Básicas
         (6, "Escreva um comando para listar todos os livros cadastrados na tabela `livros`:", False),
         (7, "Mostre apenas o nome de todos os clientes da tabela `clientes`:", False),
-        (8, "Liste todos os dados da tabela `pedidos` (que representam as compras realizadas):", False),
         
         # Grupo 2: Filtros (Cláusula WHERE)
         (9, "Exiba os livros com preco maior que R$ 50.00:", False),
