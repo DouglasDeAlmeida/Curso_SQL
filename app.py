@@ -456,7 +456,7 @@ if st.session_state["tela_ativa"] == "Playground":
         # Grupo 2: Filtros (Cláusula WHERE)
         (9, "Exiba os livros com preco maior que R$ 50.00:", False),
         (10, "Mostre os clientes que não moram em 'São Paulo':", False),
-        (11, "Liste as compras (tabela `pedidos`) realizadas após '2026-01-01':", False),
+        (11, "Liste as compras (tabela `pedidos`) realizadas após '2026-02-01':", False),
         
         # Grupo 3: Agrupamentos e Agregações (GROUP BY / COUNT)
         (12, "Mostre a quantidade de clientes por cidade (exiba a cidade e a contagem):", False),
