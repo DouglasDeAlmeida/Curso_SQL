@@ -163,7 +163,7 @@ class SQLTester:
         8: "SELECT * FROM pedidos;",
         9: "SELECT * FROM livros WHERE preco > 50.00;",
         10: "SELECT * FROM clientes WHERE cidade <> 'São Paulo';",
-        11: "SELECT * FROM pedidos WHERE data_pedido > '2026-01-01';",
+        11: "SELECT * FROM pedidos WHERE data_pedido > '2026-02-01';",
         12: "SELECT cidade, COUNT(*) FROM clientes GROUP BY cidade;",
         13: "SELECT categoria, COUNT(*) FROM livros GROUP BY categoria;",
         14: "SELECT id_cliente, COUNT(*) FROM pedidos GROUP BY id_cliente;",
