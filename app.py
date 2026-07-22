@@ -155,45 +155,43 @@ class SQLTester:
     GABARITOS = {
         1: "SELECT id_livro, titulo, preco FROM livros;",
         2: "SELECT * FROM livros;",       
-        3: "SELECT nome FROM clientes;",       
-        4: "SELECT * FROM livros ORDER BY preco DESC LIMIT 1;",
-        6: "SELECT * FROM livros WHERE estoque > 0 ORDER BY preco DESC;",
-        7: "SELECT COUNT(*) FROM livros WHERE categoria = 'Ficção';",
-        9: "SELECT * FROM livros WHERE preco > 50.00;",
-        10: "SELECT * FROM clientes WHERE cidade <> 'São Paulo';",
-        11: "SELECT * FROM pedidos WHERE data_pedido > '2026-02-01';",
-        12: "SELECT cidade, COUNT(*) FROM clientes GROUP BY cidade;",
-        13: "SELECT categoria, COUNT(*) FROM livros GROUP BY categoria;",
-        14: "SELECT id_cliente, COUNT(*) FROM pedidos GROUP BY id_cliente;",
-        15: "SELECT * FROM clientes ORDER BY nome ASC;",
-        16: "SELECT * FROM livros ORDER BY titulo ASC;",
-        17: "SELECT * FROM pedidos ORDER BY data_pedido DESC;",
-        18: "SELECT COUNT(*) FROM clientes;",
-        19: "SELECT SUM(valor) FROM pedidos;",
-        20: "SELECT AVG(estoque) FROM livros;"
+        3: "SELECT * FROM livros WHERE preco > 50.00;",
+        4: "SELECT * FROM clientes WHERE cidade <> 'São Paulo';",
+        5: "SELECT * FROM pedidos WHERE data_pedido > '2026-02-01';",
+        6: "SELECT nome FROM clientes;",       
+        7: "SELECT * FROM livros ORDER BY preco DESC LIMIT 1;",
+        8: "SELECT * FROM livros WHERE estoque > 0 ORDER BY preco DESC;",
+        9: "SELECT COUNT(*) FROM livros WHERE categoria = 'Ficção';",
+        10: "SELECT cidade, COUNT(*) FROM clientes GROUP BY cidade;",
+        11: "SELECT categoria, COUNT(*) FROM livros GROUP BY categoria;",
+        12: "SELECT id_cliente, COUNT(*) FROM pedidos GROUP BY id_cliente;",
+        13: "SELECT * FROM clientes ORDER BY nome ASC;",
+        14: "SELECT * FROM livros ORDER BY titulo ASC;",
+        15: "SELECT * FROM pedidos ORDER BY data_pedido DESC;",
+        16: "SELECT COUNT(*) FROM clientes;",
+        17: "SELECT SUM(valor) FROM pedidos;",
+        18: "SELECT AVG(estoque) FROM livros;"
     }
 
     DICAS = {
         1: "Dica: Garanta que você selecionou exatamente as colunas `id_livro`, `titulo` e `preco` da tabela `livros`.",
         2: "Dica: Utilize o caractere curinga asterisco `*` para trazer todas as colunas da tabela `livros`.",
-       
-        3: "Dica: Selecione apenas a coluna `nome` da tabela `clientes`.",
-       
-        4: "Dica: Você pode ordenar pelo preço de forma decrescente e limitar o resultado a 1 (`LIMIT 1`).",
-        6: "Dica: Use `WHERE estoque > 0` e ordene com `ORDER BY preco DESC`.",
-        7: "Dica: Use a função de agregação `COUNT(*)` filtrando por `categoria = 'Ficção'`.",
-        9: "Dica: Use a cláusula `WHERE preco > 50.00` na tabela `livros`.",
-        10: "Dica: Filtre usando `WHERE cidade <> 'São Paulo'` ou `WHERE cidade != 'São Paulo'`.",
-        11: "Dica: Lembre-se que as datas no SQLite são comparadas como strings no formato 'AAAA-MM-DD'. Use `WHERE data_pedido > '2026-01-01'`.",
-        12: "Dica: Agrupe os dados usando `GROUP BY cidade` combinando com a função `COUNT(*)`.",
-        13: "Dica: Use `GROUP BY categoria` e projete `categoria, COUNT(*)`.",
-        14: "Dica: Agrupe a tabela `pedidos` por `id_cliente` e use a função `COUNT(*)`.",
-        15: "Dica: Ordene utilizando `ORDER BY nome ASC` ou apenas `ORDER BY nome`.",
-        16: "Dica: Ordene os livros pelo título utilizando `ORDER BY titulo`.",
-        17: "Dica: Use `ORDER BY data_pedido DESC` na tabela `pedidos`.",
-        18: "Dica: Use a função `COUNT(*)` na tabela `clientes`.",
-        19: "Dica: A função para somar valores no SQL é a `SUM(valor)`.",
-        20: "Dica: Dica: Para calcular a média simples de uma coluna, utilize a função de agregação `AVG(estoque)` diretamente na tabela `livros`."
+        3: "Dica: Use a cláusula `WHERE preco > 50.00` na tabela `livros`.",
+        4: "Dica: Filtre usando `WHERE cidade <> 'São Paulo'` ou `WHERE cidade != 'São Paulo'`.",
+        5: "Dica: Lembre-se que as datas no SQLite são comparadas como strings no formato 'AAAA-MM-DD'. Use `WHERE data_pedido > '2026-01-01'`.",
+        6: "Dica: Selecione apenas a coluna `nome` da tabela `clientes`.",
+        7: "Dica: Você pode ordenar pelo preço de forma decrescente e limitar o resultado a 1 (`LIMIT 1`).",
+        8: "Dica: Use `WHERE estoque > 0` e ordene com `ORDER BY preco DESC`.",
+        9: "Dica: Use a função de agregação `COUNT(*)` filtrando por `categoria = 'Ficção'`.",
+        10: "Dica: Agrupe os dados usando `GROUP BY cidade` combinando com a função `COUNT(*)`.",
+        11: "Dica: Use `GROUP BY categoria` e projete `categoria, COUNT(*)`.",
+        12: "Dica: Agrupe a tabela `pedidos` por `id_cliente` e use a função `COUNT(*)`.",
+        13: "Dica: Ordene utilizando `ORDER BY nome ASC` ou apenas `ORDER BY nome`.",
+        14: "Dica: Ordene os livros pelo título utilizando `ORDER BY titulo`.",
+        15: "Dica: Use `ORDER BY data_pedido DESC` na tabela `pedidos`.",
+        16: "Dica: Use a função `COUNT(*)` na tabela `clientes`.",
+        17: "Dica: A função para somar valores no SQL é a `SUM(valor)`.",
+        18: "Dica: Para calcular a média simples de uma coluna, utilize a função de agregação `AVG(estoque)` diretamente na tabela `livros`."
     }
 
     @classmethod
@@ -230,7 +228,7 @@ class QuestionWidget:
         self.id_questao = id_questao
         self.titulo = titulo
         self.conn = conn
-        self.ddl_mode = ddl_mode  # Se True, executa sem esperar retorno de DataFrame (CREATE/INSERT)
+        self.ddl_mode = ddl_mode
 
     def render(self):
         st.subheader(f"Questão {self.id_questao} - {self.titulo}")
@@ -250,16 +248,14 @@ class QuestionWidget:
                 return
 
             try:
-                # 1. Execução da Query no Banco de Dados
                 if self.ddl_mode:
                     cursor = self.conn.cursor()
                     cursor.executescript(query_usuario)
                     self.conn.commit()
-                    df_resultado = pd.DataFrame()  # DataFrame vazio para o fluxo de teste
+                    df_resultado = pd.DataFrame()
                 else:
                     df_resultado = pd.read_sql_query(query_usuario, self.conn)
                 
-                # 2. Exibição do Output (Sempre exibe se for uma query SELECT normal)
                 if not self.ddl_mode:
                     st.subheader("📊 Resultado da sua Consulta:")
                     if df_resultado.empty:
@@ -269,7 +265,6 @@ class QuestionWidget:
                         st.caption(f"Total de registros retornados: {len(df_resultado)}")
                     st.markdown("---")
 
-                # 3. Teste de Validação Automatizada
                 sucesso, mensagem = SQLTester.verificar_resposta(self.id_questao, df_resultado, self.conn)
                 
                 if sucesso:
@@ -341,7 +336,6 @@ with st.sidebar:
 # --- CONTROLE DE EXIBIÇÃO DE TELAS ---
 
 if st.session_state["tela_ativa"] == "Playground":
-    # --- TELA 1: PLAYGROUND ---
     col_logo, col_titulo = st.columns([1, 4])
     with col_logo:
         st.image("image_e7d479.jpg", width=150)
@@ -351,14 +345,12 @@ if st.session_state["tela_ativa"] == "Playground":
 
     st.markdown('<div class="header-line"></div>', unsafe_allow_html=True)
     
-    # ==================== NOVO: SCHEMA INTERATIVO ====================
     with st.expander("🗺️ Visualizar Schema e Tabelas do Banco de Dados", expanded=False):
         st.markdown("""
         O banco de dados simula o sistema de uma livraria acadêmica do MEC. 
         Abaixo você pode conferir a estrutura de relacionamentos e as tabelas populadas:
         """)
         
-        # Representação visual simples das chaves (DER)
         st.code("""
   [clientes] 1  --->  N [pedidos] N  <---  1 [livros]
   (id_cliente)           (id_pedido)           (id_livro)
@@ -366,7 +358,6 @@ if st.session_state["tela_ativa"] == "Playground":
                          (id_livro) FK
         """, language="text")
         
-        # Abas interativas para inspecionar os dados reais do banco
         tab_clientes, tab_livros, tab_pedidos = st.tabs(["👥 Tabela: clientes", "📚 Tabela: livros", "🛒 Tabela: pedidos"])
         
         with tab_clientes:
@@ -383,47 +374,31 @@ if st.session_state["tela_ativa"] == "Playground":
             st.markdown("**Colunas:** `id_pedido` (PK) | `id_cliente` (FK) | `id_livro` (FK) | `data_pedido` | `valor`")
             df_preview_ped = pd.read_sql_query("SELECT * FROM pedidos", conn)
             st.dataframe(df_preview_ped, use_container_width=True)
-    # =================================================================
     
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("Pratique suas habilidades em SQL escrevendo as consultas. O sistema valida de forma automatizada se o seu resultado está correto!")
     st.markdown("<br>", unsafe_allow_html=True)
 
-   
-
-    # --- LISTA COMPLETA DE QUESTÕES DINÂMICAS ---
+    # --- LISTA REORDENADA DE QUESTÕES DINÂMICAS ---
     questoes = [
-        # Grupo 1: Consultas Básicas
         (1, "Selecione o id_livro, o titulo e preco da tabela livros:", False),
-        (2, "Escreva um comando para listar todos os livros cadastrados na tabela `livros`:", False),#6
-        (3, "Mostre apenas o nome de todos os clientes da tabela `clientes`:", False),#7
-        
-        (6, "Selecione apenas os livros que estão em estoque (estoque > 0) e ordene pelo preço de forma decrescente:", False),#2
-        (7, "Descubra quantos livros são da categoria 'Ficção' (use COUNT):", False),#3
-        (4, "Selecione todos os dados do livro mais caro do banco (Dica: use ORDER BY e LIMIT):", False),# bonus
-        
-        
-
-        
-        # Grupo 2: Filtros (Cláusula WHERE)
-        (9, "Exiba os livros com preco maior que R$ 50.00:", False),
-        (10, "Mostre os clientes que não moram em 'São Paulo':", False),
-        (11, "Liste as compras (tabela `pedidos`) realizadas após '2026-02-01':", False),
-        
-        # Grupo 3: Agrupamentos e Agregações (GROUP BY / COUNT)
-        (12, "Mostre a quantidade de clientes por cidade (exiba a cidade e a contagem):", False),
-        (13, "Exiba a quantidade de livros por categoria (exiba a categoria e a contagem):", False),
-        (14, "Liste o total de compras (pedidos) realizadas por cada cliente (exiba o id_cliente e a contagem):", False),
-        
-        # Grupo 4: Ordenação (ORDER BY)
-        (15, "Liste todos os clientes em ordem alfabética pelo nome:", False),
-        (16, "Mostre todos os livros em ordem alfabética pelo título:", False),
-        (17, "Liste as compras (tabela `pedidos`) em ordem decrescente pela data do pedido:", False),
-        
-        # Grupo 5: Funções Estatísticas/Agregação Globais
-        (18, "Conte quantos clientes estão cadastrados no total:", False),
-        (19, "Calcule o valor total acumulado de todas as compras (soma do campo valor na tabela `pedidos`):", False),
-        (20, "Calcule a quantidade média de livros que tem no estoque:", False)
+        (2, "Escreva um comando para listar todos os livros cadastrados na tabela `livros`:", False),
+        (3, "Exiba os livros com preco maior que R$ 50.00:", False),
+        (4, "Mostre os clientes que não moram em 'São Paulo':", False),
+        (5, "Liste as compras (tabela `pedidos`) realizadas após '2026-02-01':", False),
+        (6, "Mostre apenas o nome de todos os clientes da tabela `clientes`:", False),
+        (7, "Selecione todos os dados do livro mais caro do banco (Dica: use ORDER BY e LIMIT):", False),
+        (8, "Selecione apenas os livros que estão em estoque (estoque > 0) e ordene pelo preço de forma decrescente:", False),
+        (9, "Descubra quantos livros são da categoria 'Ficção' (use COUNT):", False),
+        (10, "Mostre a quantidade de clientes por cidade (exiba a cidade e a contagem):", False),
+        (11, "Exiba a quantidade de livros por categoria (exiba a categoria e a contagem):", False),
+        (12, "Liste o total de compras (pedidos) realizadas por cada cliente (exiba o id_cliente e a contagem):", False),
+        (13, "Liste todos os clientes em ordem alfabética pelo nome:", False),
+        (14, "Mostre todos os livros em ordem alfabética pelo título:", False),
+        (15, "Liste as compras (tabela `pedidos`) em ordem decrescente pela data do pedido:", False),
+        (16, "Conte quantos clientes estão cadastrados no total:", False),
+        (17, "Calcule o valor total acumulado de todas as compras (soma do campo valor na tabela `pedidos`):", False),
+        (18, "Calcule a quantidade média de livros que tem no estoque:", False)
     ]
 
     for id_q, desc, ddl_mode in questoes:
@@ -432,7 +407,6 @@ if st.session_state["tela_ativa"] == "Playground":
         st.markdown("<br><br>", unsafe_allow_html=True)
 
 elif st.session_state["tela_ativa"] == "Sobre":
-    # --- TELA 2: SOBRE ---
     col_logo, col_titulo = st.columns([1, 4])
     with col_logo:
         st.image("image_e7d479.jpg", width=150)
