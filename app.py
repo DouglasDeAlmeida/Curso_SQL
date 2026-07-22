@@ -154,11 +154,11 @@ class SQLTester:
     
     GABARITOS = {
         1: "SELECT id_livro, titulo, preco FROM livros;",
-        2: "SELECT * FROM livros WHERE estoque > 0 ORDER BY preco DESC;",
-        3: "SELECT COUNT(*) FROM livros WHERE categoria = 'Ficção';",
+        2: "SELECT * FROM livros;",       
+        3: "SELECT nome FROM clientes;",       
         4: "SELECT * FROM livros ORDER BY preco DESC LIMIT 1;",
-        6: "SELECT * FROM livros;",
-        7: "SELECT nome FROM clientes;",
+        6: "SELECT * FROM livros WHERE estoque > 0 ORDER BY preco DESC;",
+        7: "SELECT COUNT(*) FROM livros WHERE categoria = 'Ficção';",
         9: "SELECT * FROM livros WHERE preco > 50.00;",
         10: "SELECT * FROM clientes WHERE cidade <> 'São Paulo';",
         11: "SELECT * FROM pedidos WHERE data_pedido > '2026-02-01';",
@@ -175,11 +175,13 @@ class SQLTester:
 
     DICAS = {
         1: "Dica: Garanta que você selecionou exatamente as colunas `id_livro`, `titulo` e `preco` da tabela `livros`.",
-        2: "Dica: Use `WHERE estoque > 0` e ordene com `ORDER BY preco DESC`.",
-        3: "Dica: Use a função de agregação `COUNT(*)` filtrando por `categoria = 'Ficção'`.",
+        2: "Dica: Utilize o caractere curinga asterisco `*` para trazer todas as colunas da tabela `livros`.",
+       
+        3: "Dica: Selecione apenas a coluna `nome` da tabela `clientes`.",
+       
         4: "Dica: Você pode ordenar pelo preço de forma decrescente e limitar o resultado a 1 (`LIMIT 1`).",
-        6: "Dica: Utilize o caractere curinga asterisco `*` para trazer todas as colunas da tabela `livros`.",
-        7: "Dica: Selecione apenas a coluna `nome` da tabela `clientes`.",
+        6: "Dica: Use `WHERE estoque > 0` e ordene com `ORDER BY preco DESC`.",
+        7: "Dica: Use a função de agregação `COUNT(*)` filtrando por `categoria = 'Ficção'`.",
         9: "Dica: Use a cláusula `WHERE preco > 50.00` na tabela `livros`.",
         10: "Dica: Filtre usando `WHERE cidade <> 'São Paulo'` ou `WHERE cidade != 'São Paulo'`.",
         11: "Dica: Lembre-se que as datas no SQLite são comparadas como strings no formato 'AAAA-MM-DD'. Use `WHERE data_pedido > '2026-01-01'`.",
@@ -391,15 +393,17 @@ if st.session_state["tela_ativa"] == "Playground":
 
     # --- LISTA COMPLETA DE QUESTÕES DINÂMICAS ---
     questoes = [
-        # Originais
-        (1, "Selecione o id_livro, o titulo e preco da tabela livros:", False),
-        (2, "Selecione apenas os livros que estão em estoque (estoque > 0) e ordene pelo preço de forma decrescente:", False),
-        (3, "Descubra quantos livros são da categoria 'Ficção' (use COUNT):", False),
-        (4, "Selecione todos os dados do livro mais caro do banco (Dica: use ORDER BY e LIMIT):", False),
-        
         # Grupo 1: Consultas Básicas
-        (6, "Escreva um comando para listar todos os livros cadastrados na tabela `livros`:", False),
-        (7, "Mostre apenas o nome de todos os clientes da tabela `clientes`:", False),
+        (1, "Selecione o id_livro, o titulo e preco da tabela livros:", False),
+        (2, "Escreva um comando para listar todos os livros cadastrados na tabela `livros`:", False),#6
+        (3, "Mostre apenas o nome de todos os clientes da tabela `clientes`:", False),#7
+        
+        (6, "Selecione apenas os livros que estão em estoque (estoque > 0) e ordene pelo preço de forma decrescente:", False),#2
+        (7, "Descubra quantos livros são da categoria 'Ficção' (use COUNT):", False),#3
+        (4, "Selecione todos os dados do livro mais caro do banco (Dica: use ORDER BY e LIMIT):", False),# bonus
+        
+        
+
         
         # Grupo 2: Filtros (Cláusula WHERE)
         (9, "Exiba os livros com preco maior que R$ 50.00:", False),
